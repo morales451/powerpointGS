@@ -795,7 +795,7 @@ Each slide has up to four parts:
 
 **Say it like this:** No need to prime everything. Test first. If the test is weak, prime.
 
-### 59. Sweat the Details
+### 59. 90% of Roof Leaks Start Here
 
 *On slide:*
 - Seams
@@ -1404,7 +1404,7 @@ Each slide has up to four parts:
 
 **Say it like this:** 605 works on both, so it's handy when the weather is iffy.
 
-### 108. Sweat the Details
+### 108. 90% of Roof Leaks Start Here
 
 *On slide:*
 - Seams
@@ -1983,7 +1983,7 @@ Each slide has up to four parts:
 
 **Ask the crew:** "Who can walk us through this one?" Let them talk first.
 
-### 155. Sweat the Details
+### 155. 90% of Roof Leaks Start Here
 
 *On slide:*
 - Seams
@@ -2498,7 +2498,7 @@ Each slide has up to four parts:
 
 **Ask the crew:** "Who can walk us through this one?" Let them talk first.
 
-### 198. Sweat the Details
+### 198. 90% of Roof Leaks Start Here
 
 *On slide:*
 - Seams

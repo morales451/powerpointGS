@@ -37,16 +37,14 @@ const C = pres.SchemeColor;
 const W = 13.333, M = 0.6, CW = W - 2 * M;
 
 // ---------- layouts ----------
-const footer = [
-  { text: { text: "Henry Gold Seal Training", options: { x: M, y: 7.0, w: 6, h: 0.3, fontSize: 10, color: C.accent5, margin: 0 } } },
-];
+// No label above the title: the section name lives in the footer instead.
+const footerPh = (color) => ({ placeholder: { options: { name: "footer", type: "body", x: M, y: 7.0, w: 8, h: 0.3, fontSize: 10, color, margin: 0 }, text: "" } });
 pres.defineSlideMaster({
   title: "CONTENT",
   background: { color: C.background1 },
   objects: [
-    ...footer,
-    { placeholder: { options: { name: "tag", type: "body", x: M, y: 0.32, w: CW, h: 0.3, fontSize: 12, bold: true, color: C.accent1, margin: 0, charSpacing: 1 }, text: "" } },
-    { placeholder: { options: { name: "title", type: "title", x: M, y: 0.62, w: CW, h: 0.8, fontSize: 30, bold: true, color: C.text2, fontFace: THEME.headFontFace, margin: 0, valign: "top", align: "left" }, text: "" } },
+    footerPh(C.accent5),
+    { placeholder: { options: { name: "title", type: "title", x: M, y: 0.5, w: CW, h: 0.85, fontSize: 32, bold: true, color: C.text2, fontFace: THEME.headFontFace, margin: 0, valign: "top", align: "left" }, text: "" } },
   ],
   slideNumber: { x: W - M - 0.6, y: 7.0, w: 0.6, h: 0.3, fontSize: 10, color: C.accent5, align: "right" },
 });
@@ -54,8 +52,8 @@ pres.defineSlideMaster({
   title: "DARK",
   background: { color: C.text2 },
   objects: [
-    { placeholder: { options: { name: "tag", type: "body", x: 0.8, y: 1.2, w: 11.7, h: 0.4, fontSize: 14, bold: true, color: C.accent2, margin: 0, charSpacing: 2 }, text: "" } },
-    { placeholder: { options: { name: "title", type: "title", x: 0.8, y: 1.7, w: 11.7, h: 1.9, fontSize: 40, bold: true, color: C.background1, fontFace: THEME.headFontFace, margin: 0, valign: "top", align: "left" }, text: "" } },
+    footerPh(C.accent6),
+    { placeholder: { options: { name: "title", type: "title", x: 0.8, y: 1.6, w: 11.7, h: 2.2, fontSize: 44, bold: true, color: C.background1, fontFace: THEME.headFontFace, margin: 0, valign: "bottom", align: "left" }, text: "" } },
   ],
   slideNumber: { x: W - M - 0.6, y: 7.0, w: 0.6, h: 0.3, fontSize: 10, color: C.accent6, align: "right" },
 });
@@ -93,8 +91,8 @@ function pickSize(items, w, h, sizes = [24, 22, 20, 18, 17, 16, 15, 14]) {
   return sizes.find((s) => textHeight(items, s, w) <= h) || sizes[sizes.length - 1];
 }
 
-function bullets(slide, items, x, y, w, h) {
-  const size = pickSize(items, w, h);
+function bullets(slide, items, x, y, w, h, fixed) {
+  const size = fixed || pickSize(items, w, h);
   const paras = [];
   items.forEach((t, i) => {
     runs(t, size).forEach((r, j, arr) => {
@@ -129,80 +127,64 @@ async function icon(Comp, color) {
 
 // ---------- slide kinds ----------
 const K = {
-  cover(s, d, n) {
-    s.addText("GOLD SEAL TRAINING", { placeholder: "tag" });
-    s.addText(d.title, { placeholder: "title" });
-    s.addText(d.sub.replace("Gold Seal Training — ", ""), { x: 0.8, y: 3.7, w: 6.2, h: 1.2, fontSize: 24, color: C.accent6, margin: 0, isTextBox: true, valign: "top", objectName: "Subtitle" });
-    if (SIZES[10]) fitImage(s, 10, 7.3, 3.2, 5.4, 3.6, "Before and after roof photo");
+  cover(s, d) {
+    // Own title box: the layout's full-width title would run under the photo.
+    s.addText(d.title, { x: 0.8, y: 1.4, w: 5.8, h: 2.6, fontSize: 44, bold: true, color: C.background1, fontFace: THEME.headFontFace, margin: 0, valign: "bottom", isTextBox: true, objectName: "Title" });
+    s.addText(d.sub.replace("Gold Seal Training — ", ""), { x: 0.8, y: 4.15, w: 5.8, h: 1.4, fontSize: 30, bold: true, color: C.accent2, margin: 0, isTextBox: true, valign: "top", objectName: "Subtitle" });
+    if (SIZES[245]) fitImage(s, 245, 7.0, 1.0, 5.73, 5.6, "Before and after: a restored roof");
   },
   divider(s, d) {
-    s.addText(d.section.toUpperCase(), { placeholder: "tag" });
     s.addText(d.title, { placeholder: "title" });
-    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 0.8, y: 4.1, w: 11.7, h: 1.9, fill: { color: C.accent1 }, rectRadius: 0.12, line: { type: "none" }, objectName: "Remember card" });
-    s.addText("REMEMBER", { x: 1.2, y: 4.35, w: 10.9, h: 0.4, fontSize: 14, bold: true, color: C.accent2, margin: 0, charSpacing: 2, isTextBox: true });
-    s.addText(d.remember, { x: 1.2, y: 4.8, w: 10.9, h: 1.0, fontSize: 28, bold: true, color: C.background1, margin: 0, valign: "top", isTextBox: true, objectName: "Remember line" });
+    s.addText(d.remember, { x: 0.8, y: 4.2, w: 11.7, h: 1.8, fontSize: 34, bold: true, color: C.accent2, margin: 0, valign: "top", isTextBox: true, objectName: "Remember line" });
   },
   text(s, d, n) {
-    const bottom = d.foot ? 6.35 : 6.75;
-    const hasVis = !!SIZES[n];
-    let y = 1.65;
-    const tw = hasVis ? 5.8 : CW;
-    if (d.big) {
-      s.addText(d.big, { x: M, y: 1.5, w: tw, h: 1.05, fontSize: 66, bold: true, color: C.accent1, margin: 0, isTextBox: true, fontFace: THEME.headFontFace, objectName: "Big number" });
-      s.addText(d.bigLabel, { x: M, y: 2.55, w: tw, h: 0.45, fontSize: 20, bold: true, color: C.text2, margin: 0, isTextBox: true, objectName: "Big number label" });
-      y = 3.25;
-    }
-    if (hasVis) {
-      bullets(s, d.bullets, M, y, tw, bottom - y);
-      fitImage(s, n, 6.8, 1.6, W - M - 6.8, bottom - 1.6, "Photo");
+    const top = 1.6, bottom = d.foot ? 6.35 : 6.75;
+    if (SIZES[n]) {
+      bullets(s, d.bullets, M, top, 5.8, bottom - top);
+      fitImage(s, n, 6.8, top, W - M - 6.8, bottom - top, "Photo");
     } else {
-      cards(s, d.bullets, y, bottom);
+      columns(s, d.bullets, top, bottom);
     }
     if (d.foot) foot(s, d.foot);
   },
   photo(s, d, n) {
-    if (SIZES[n]) fitImage(s, n, M, 1.55, CW, 4.6, "Photo");
-    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: M, y: 6.28, w: CW, h: 0.62, fill: { color: C.background2 }, rectRadius: 0.08, line: { type: "none" }, objectName: "Caption card" });
-    s.addText(d.caption, { x: M + 0.25, y: 6.28, w: CW - 0.5, h: 0.62, fontSize: d.caption.length > 95 ? 16 : 19, bold: true, color: C.text2, margin: 0, valign: "middle", isTextBox: true, fit: "shrink", objectName: "Caption" });
+    if (SIZES[n]) fitImage(s, n, M, 1.5, CW, 4.75, "Photo");
+    s.addText(d.caption, { x: M, y: 6.38, w: CW, h: 0.5, fontSize: d.caption.length > 95 ? 17 : 20, bold: true, color: C.text2, margin: 0, valign: "top", isTextBox: true, fit: "shrink", objectName: "Caption" });
   },
+  // The numbers stay: the order of the steps is the point.
   steps(s, d) {
-    const cols = d.items.length === 4 ? 4 : 3, gw = 0.3, cw = (CW - gw * (cols - 1)) / cols, ch = 2.25;
+    const cols = d.items.length === 4 ? 4 : 3, gw = 0.45, cw = (CW - gw * (cols - 1)) / cols, rh = 2.35;
     d.items.forEach(([head, sub], i) => {
-      const x = M + (i % cols) * (cw + gw), y = 1.7 + Math.floor(i / cols) * (ch + 0.3);
-      s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y, w: cw, h: ch, fill: { color: C.background2 }, rectRadius: 0.1, line: { type: "none" }, objectName: `Step ${i + 1} card` });
-      s.addShape(pres.shapes.OVAL, { x: x + 0.3, y: y + 0.3, w: 0.75, h: 0.75, fill: { color: C.accent1 }, line: { type: "none" }, objectName: `Step ${i + 1} number` });
-      s.addText(String(i + 1), { x: x + 0.3, y: y + 0.3, w: 0.75, h: 0.75, fontSize: 26, bold: true, color: C.background1, align: "center", valign: "middle", margin: 0, isTextBox: true });
-      s.addText(head, { x: x + 0.3, y: y + 1.2, w: cw - 0.6, h: 0.45, fontSize: 21, bold: true, color: C.text2, margin: 0, isTextBox: true });
-      s.addText(sub, { x: x + 0.3, y: y + 1.65, w: cw - 0.6, h: 0.55, fontSize: 16, color: C.text1, margin: 0, valign: "top", isTextBox: true, fit: "shrink" });
+      const x = M + (i % cols) * (cw + gw), y = 1.75 + Math.floor(i / cols) * rh;
+      s.addShape(pres.shapes.OVAL, { x, y, w: 0.7, h: 0.7, fill: { color: C.accent1 }, line: { type: "none" }, objectName: `Step ${i + 1} number` });
+      s.addText(String(i + 1), { x, y, w: 0.7, h: 0.7, fontSize: 24, bold: true, color: C.background1, align: "center", valign: "middle", margin: 0, isTextBox: true });
+      s.addText(head, { x, y: y + 0.88, w: cw, h: 0.45, fontSize: 22, bold: true, color: C.text2, margin: 0, isTextBox: true });
+      s.addText(sub, { x, y: y + 1.35, w: cw, h: 0.65, fontSize: 17, color: C.text1, margin: 0, valign: "top", isTextBox: true, fit: "shrink" });
     });
-    if (d.after) bullets(s, d.after, M, 4.3, CW, (d.foot ? 6.35 : 6.75) - 4.3);
+    if (d.after) bullets(s, d.after, M, 4.35, CW * 0.8, (d.foot ? 6.35 : 6.75) - 4.35);
     if (d.foot) foot(s, d.foot);
   },
   compare(s, d) {
-    const gw = 0.4, cw = (CW - gw) / 2;
+    const gw = 0.8, cw = (CW - gw) / 2;
     d.cols.forEach((c, i) => {
       const x = M + i * (cw + gw), win = i === 1;
-      s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y: 1.7, w: cw, h: 4.9, fill: { color: win ? C.background2 : C.background1 }, line: { color: win ? C.accent1 : C.accent5, width: 1.5 }, rectRadius: 0.1, objectName: `${c.head} card` });
-      s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: x + 0.35, y: 2.0, w: 2.6, h: 0.7, fill: { color: win ? C.accent1 : C.accent5 }, rectRadius: 0.35, line: { type: "none" } });
-      s.addText(c.head, { x: x + 0.35, y: 2.0, w: 2.6, h: 0.7, fontSize: 24, bold: true, color: C.background1, align: "center", valign: "middle", margin: 0, isTextBox: true });
-      bullets(s, c.items, x + 0.4, 3.05, cw - 0.8, 3.3);
+      s.addText(c.head, { x, y: 1.7, w: cw, h: 0.7, fontSize: 34, bold: true, color: win ? C.accent1 : C.accent5, margin: 0, isTextBox: true, fontFace: THEME.headFontFace });
+      bullets(s, c.items, x, 2.65, cw, 3.9);
     });
+    s.addShape(pres.shapes.LINE, { x: M + cw + gw / 2, y: 1.8, w: 0, h: 4.6, line: { color: C.background2, width: 1.5 }, objectName: "Column divider" });
   },
   async rules(s, d) {
     const icons = [FaBroom, FaTint, FaHardHat];
-    const gw = 0.4, cw = (CW - 2 * gw) / 3;
+    const gw = 0.5, cw = (CW - 2 * gw) / 3;
     for (let i = 0; i < 3; i++) {
       const [word, sub] = d.rules[i];
       const x = M + i * (cw + gw);
-      s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y: 1.75, w: cw, h: 4.8, fill: { color: C.background2 }, rectRadius: 0.12, line: { type: "none" }, objectName: `${word} card` });
-      s.addShape(pres.shapes.OVAL, { x: x + cw / 2 - 0.75, y: 2.15, w: 1.5, h: 1.5, fill: { color: C.accent1 }, line: { type: "none" } });
-      s.addImage({ data: await icon(icons[i], THEME.colors.lt1), x: x + cw / 2 - 0.42, y: 2.48, w: 0.84, h: 0.84, altText: word });
-      s.addText(`${i + 1}. ${word}`, { x, y: 4.0, w: cw, h: 0.9, fontSize: 44, bold: true, color: C.text2, align: "center", margin: 0, isTextBox: true, fontFace: THEME.headFontFace });
-      s.addText(sub, { x: x + 0.3, y: 5.0, w: cw - 0.6, h: 1.1, fontSize: 20, color: C.text1, align: "center", valign: "top", margin: 0, isTextBox: true });
+      s.addImage({ data: await icon(icons[i], THEME.colors.accent1), x, y: 2.3, w: 0.9, h: 0.9, altText: word });
+      s.addText(word + ".", { x, y: 3.4, w: cw, h: 1.2, fontSize: 64, bold: true, color: C.text2, margin: 0, isTextBox: true, fontFace: THEME.headFontFace });
+      s.addText(sub, { x, y: 4.75, w: cw, h: 1.2, fontSize: 22, color: C.text1, valign: "top", margin: 0, isTextBox: true });
     }
   },
-  table(s, d, n) {
-    const ncol = d.head.length;
+  table(s, d) {
     const longest = d.head.map((h, c) => Math.max(h.length, ...d.rows.map((r) => Math.max(...r[c].split("\n").map((l) => l.length)))));
     const weights = longest.map((l) => Math.min(Math.max(l, 14), 60));
     const total = weights.reduce((a, b) => a + b, 0);
@@ -218,31 +200,20 @@ const K = {
     if (d.foot) foot(s, d.foot);
   },
   closing(s, d) {
-    s.addText("WRAP-UP", { placeholder: "tag" });
     s.addText(d.title, { placeholder: "title" });
-    const gw = 0.3, cw = (11.7 - gw) / 2;
-    d.recap.forEach((t, i) => {
-      const x = 0.8 + (i % 2) * (cw + gw), y = 3.3 + Math.floor(i / 2) * 1.35;
-      s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y, w: cw, h: 1.1, fill: { color: C.accent1 }, rectRadius: 0.1, line: { type: "none" }, objectName: `Recap ${i + 1}` });
-      s.addText([
-        { text: `${i + 1}  `, options: { color: C.accent2, bold: true } },
-        { text: t, options: { color: C.background1, bold: true } },
-      ], { x: x + 0.35, y, w: cw - 0.7, h: 1.1, fontSize: 24, valign: "middle", margin: 0, isTextBox: true });
-    });
+    s.addText(d.recap.map((t, i) => ({ text: t, options: { breakLine: i < d.recap.length - 1, paraSpaceAfter: 14 } })),
+      { x: 0.8, y: 4.1, w: 11.7, h: 2.6, fontSize: 30, bold: true, color: C.accent2, margin: 0, valign: "top", isTextBox: true, objectName: "Recap" });
   },
 };
 
-// Text slides with no picture: show the points as a grid of cards instead of plain bullets.
-function cards(slide, items, top, bottom) {
-  const n = items.length;
-  const cols = n <= 4 ? 2 : 3, rows = Math.ceil(n / cols);
-  const gw = 0.3, cw = (CW - gw * (cols - 1)) / cols, ch = (bottom - top - gw * (rows - 1)) / rows;
-  const size = Math.min(...items.map((t) => pickSize([t], cw - 0.5, ch - 0.3, [22, 20, 18, 16, 15, 14])));
-  items.forEach((t, i) => {
-    const x = M + (i % cols) * (cw + gw), y = top + Math.floor(i / cols) * (ch + gw);
-    slide.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y, w: cw, h: ch, fill: { color: C.background2 }, rectRadius: 0.1, line: { type: "none" }, objectName: `Card ${i + 1}` });
-    slide.addText(runs(t, size), { x: x + 0.25, y, w: cw - 0.5, h: ch, valign: "middle", margin: 0, isTextBox: true });
-  });
+// Text slides with no picture: one readable column, or two when the list is long.
+// Lines stay short (about 60-70 characters) instead of running across the whole slide.
+function columns(slide, items, top, bottom) {
+  if (items.length <= 5) return bullets(slide, items, M, top, 8.6, bottom - top);
+  const half = Math.ceil(items.length / 2), gw = 0.6, cw = (CW - gw) / 2;
+  const size = Math.min(pickSize(items.slice(0, half), cw, bottom - top), pickSize(items.slice(half), cw, bottom - top));
+  bullets(slide, items.slice(0, half), M, top, cw, bottom - top, size);
+  bullets(slide, items.slice(half), M + cw + gw, top, cw, bottom - top, size);
 }
 
 // pptxgenjs writes an extra <a:pPr> before every run after the first in a paragraph. That is
@@ -265,10 +236,8 @@ async function dropMidParagraphProps(file) {
     if (d.section !== lastSection) { pres.addSection({ title: d.section }); lastSection = d.section; }
     const dark = ["cover", "divider", "closing"].includes(d.kind);
     const s = pres.addSlide({ masterName: dark ? "DARK" : "CONTENT", sectionTitle: d.section });
-    if (!dark) {
-      s.addText(d.section.toUpperCase(), { placeholder: "tag" });
-      s.addText(d.title, { placeholder: "title" });
-    }
+    if (!dark) s.addText(d.title, { placeholder: "title" });
+    s.addText(d.kind === "cover" ? "Gold Seal Training" : `Henry Gold Seal Training  ·  ${d.section}`, { placeholder: "footer" });
     await K[d.kind](s, d, n);
     s.addNotes(notesText(d.notes, n));
   }

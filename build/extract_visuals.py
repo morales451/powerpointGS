@@ -24,11 +24,15 @@ CROP = {3: (0, .22, 1, 1), 4: (0, .22, 1, 1), 5: (.18, 0, 1, 1), 40: (.40, 0, 1,
 
 
 def trim(im):
+    """Crop to the pictures. Thin rules and faint shadows left over from the old layout
+    are ignored, so they don't stretch the crop into empty white space."""
     a = np.asarray(im).astype(int)
-    ys, xs = np.where(np.abs(a - 255).sum(axis=2) > 40)
-    if len(xs) < 2000 or xs.max() - xs.min() < 80 or ys.max() - ys.min() < 80:
+    ink = np.abs(a - 255).sum(axis=2) > 90
+    cols = np.where(ink.sum(axis=0) > max(8, 0.06 * im.height))[0]
+    rows = np.where(ink.sum(axis=1) > max(8, 0.06 * im.width))[0]
+    if len(cols) < 80 or len(rows) < 80:
         return None
-    return im.crop((max(0, xs.min() - 4), max(0, ys.min() - 4), min(im.width, xs.max() + 5), min(im.height, ys.max() + 5)))
+    return im.crop((max(0, cols.min() - 2), max(0, rows.min() - 2), min(im.width, cols.max() + 3), min(im.height, rows.max() + 3)))
 
 
 doc = fitz.open(src)

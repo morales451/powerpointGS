@@ -133,7 +133,7 @@ const cleaning = (first, types) => {
     } : REVIEW("cleaning by roof type — and the dry-roof rule"));
 };
 
-const details90 = (first) => txt("Sweat the Details", [
+const details90 = (first) => txt("90% of Roof Leaks Start Here", [
   "Seams",
   "Penetrations — pipes, vents, drains",
   "Curbs",
@@ -145,7 +145,7 @@ const details90 = (first) => txt("Sweat the Details", [
   say: "Most of the roof is wide-open field. Leaks almost never start there. They start where something cuts through or changes. Do these first, and do them right.",
   stick: "A boat doesn't sink through the middle of the hull. It leaks at the seams and the holes.",
   ask: "\"Name the last leak you chased. Where was it?\" (It's almost always one of these.)",
-} : REVIEW("the six detail areas where 90% of leaks start"), { big: "90%", bigLabel: "of roof leaks start at these spots" });
+} : REVIEW("the six detail areas where 90% of leaks start"));
 
 const gridSlide = (first, rate, product, covers) => txt("Measure the Roof in Squares", [
   "Mark the roof in 10' × 10' boxes — 1 box = 1 square = 100 sq ft",
