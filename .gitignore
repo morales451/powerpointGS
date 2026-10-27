@@ -1,0 +1,4 @@
+build/node_modules/
+build/visuals/
+# impeccable skills (npx impeccable install) — local tooling, reinstall per machine
+.claude/
